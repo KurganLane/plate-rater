@@ -19,7 +19,7 @@
 			<h1>Plate Rater</h1>
 		</div>
 		<div ng-repeat="rating in ratings">
-			<strong>State</strong> - {{rating.state}} <strong>Plate Number</strong> - {{rating.number}} -  {{rating.rating}}	
+			<strong>State</strong> - {{rating.state}} <strong>Plate Number</strong> - {{rating.number}} - <a href="#/ratings/{{$index}}">View Ratings</a>	
 		</div>
 		<form ng-submit="addRating()" style="margin-top:30px;">
 			<div class="form-group">
@@ -31,8 +31,32 @@
 			<div class="form-group">
 				<input type="text" class="form-control" ng-model="rating" placeholder="Rating"></input>
 			</div>
-			<button type="submit">Add Rating</button>
+			<button type="submit" class="btn btn-primary">Add Rating</button>
 		</form>
+	</script>
+
+	<script type="text/ng-template" id="/ratings.html">
+		<div class="page-header">
+			<h1>Plate Rater</h1>
+		</div>
+		<div>
+			<strong>State</strong> - {{rating.state}}<br>
+			<strong>Plate Number</strong> - {{rating.number}}<br>
+		</div>
+		<div>
+			{{rating.rating}}
+		</div>
+		<div ng-repeat="comment in rating.comments">
+			{{comment}}
+		</div>
+		<form ng-submit="addComment()" style="margin-top:30px;">
+			<h3>Add a New Comment</h3>
+			<div class="form-group">
+				<input type="text" class="form-control" placeholder="Comment" ng-model="body"></input>
+			</div>
+			<button type="submit" class="btn btn-primary">Add Comment</button>
+		</form>
+		<a href="#/home">Home</a>
 	</script>
 </body>
 </html>
