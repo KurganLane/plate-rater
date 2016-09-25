@@ -11,6 +11,12 @@ app.config([
 				templateUrl: '/home.html',
 				controller: 'MainCtrl'
 			});
+		$stateProvider
+			.state('ratings',{
+				url: '/ratings/{id}',
+				templateUrl: '/ratings.html',
+				controller: 'RatingsCtrl'
+			});
 		$urlRouterProvider.otherwise('home');
 }]);
 
@@ -29,9 +35,23 @@ app.controller('MainCtrl', [
 
 		$scope.addRating = function(){
 			if(!$scope.state||$scope.state===''||!$scope.number||$scope.number===''||!$scope.rating||$scope.rating===''){return;}
-			$scope.ratings.push({state: $scope.state, number: $scope.number, rating: $scope.rating});
+			$scope.ratings.push({state: $scope.state, number: $scope.number, rating: $scope.rating, comments: []});
 			$scope.state='';
 			$scope.number='';
 			$scope.rating='';
+		};
+}]);
+
+app.controller('RatingsCtrl',[
+	'$scope',
+	'$stateParams',
+	'ratings',
+	function($scope, $stateParams, ratings){
+		$scope.rating = ratings.ratings[$stateParams.id];
+
+		$scope.addComment = function(){
+			if($scope.body===''){return;}
+			$scope.rating.comments.push($scope.body);
+			$scope.body='';
 		};
 }]);
