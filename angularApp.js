@@ -9,8 +9,14 @@ app.config([
 			.state('home', {
 				url: '/home',
 				templateUrl: '/home.html',
-				controller: 'MainCtrl'
+				controller: 'MainCtrl',
+				resolve: {
+					postPromise: ['ratings', function(ratings){
+						return ratings.getAll();
+					}]
+				}
 			});
+
 		$stateProvider
 			.state('ratings',{
 				url: '/ratings/{id}',
@@ -20,10 +26,23 @@ app.config([
 		$urlRouterProvider.otherwise('home');
 }]);
 
-app.factory('ratings', [function(){
+app.factory('ratings', ['$http', function($http){
 	var o = {
 		ratings: []
 	};
+
+	o.getAll = function(){
+		return $http.get('/ratings').success(function(data){
+			angular.copy(data, o.ratings);
+		});
+	};
+
+	o.create = function(rating){
+		return $http.post('/ratings', rating).success(function(data){
+			o.ratings.push(data);
+		});
+	};
+
 	return o;
 }]);
 
@@ -35,7 +54,7 @@ app.controller('MainCtrl', [
 
 		$scope.addRating = function(){
 			if(!$scope.state||$scope.state===''||!$scope.number||$scope.number===''||!$scope.rating||$scope.rating===''){return;}
-			$scope.ratings.push({state: $scope.state, number: $scope.number, rating: $scope.rating, comments: []});
+			ratings.create({state: $scope.state, number: $scope.number, rating: $scope.rating, comments: []});
 			$scope.state='';
 			$scope.number='';
 			$scope.rating='';
