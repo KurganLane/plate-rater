@@ -55,6 +55,10 @@ app.factory('ratings', ['$http', function($http){
 		});
 	};
 
+	o.addComment = function(id, comment){
+		return $http.post('/ratings/' + id + '/comments', comment);
+	};
+
 	return o;
 }]);
 
@@ -82,7 +86,11 @@ app.controller('RatingsCtrl',[
 
 		$scope.addComment = function(){
 			if($scope.body===''){return;}
-			$scope.rating.comments.push($scope.body);
+			ratings.addComment(rating._id, {
+				body: $scope.body
+			}).success(function(comment){
+				$scope.rating.comments.push(comment);
+			});
 			$scope.body='';
 		};
 }]);
