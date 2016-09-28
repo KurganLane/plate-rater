@@ -48,10 +48,10 @@
 			<strong>Plate Number</strong> - {{rating.number}}<br>
 		</div>
 		<div>
-			{{rating.rating}}
+			{{rating.rating}}<br><br>
 		</div>
 		<div ng-repeat="comment in rating.comments">
-			{{comment}}
+			{{comment.body}}<br><br>
 		</div>
 		<form ng-submit="addComment()" style="margin-top:30px;">
 			<h3>Add a New Comment</h3>
