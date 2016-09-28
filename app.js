@@ -1,57 +1,64 @@
-var app = angular.module('plateRater', ['ui.router']);
+var express = require('express');
+var path = require('path');
+var favicon = require('serve-favicon');
+var logger = require('morgan');
+var cookieParser = require('cookie-parser');
+var bodyParser = require('body-parser');
+var mongoose = require('mongoose');
+require('./models/Ratings');
+require('./models/Comments');
 
-app.config([
-	'$stateProvider',
-	'$urlRouterProvider',
-	function($stateProvider, $urlRouterProvider){
+mongoose.connect('mongodb://localhost/news');
+var routes = require('./routes/index');
+var users = require('./routes/users');
 
-		$stateProvider
-			.state('home', {
-				url: '/home',
-				templateUrl: '/home.html',
-				controller: 'MainCtrl'
-			});
-		$stateProvider
-			.state('ratings',{
-				url: '/ratings/{id}',
-				templateUrl: '/ratings.html',
-				controller: 'RatingsCtrl'
-			});
-		$urlRouterProvider.otherwise('home');
-}]);
+var app = express();
 
-app.factory('ratings', [function(){
-	var o = {
-		ratings: []
-	};
-	return o;
-}]);
+// view engine setup
+app.set('views', path.join(__dirname, 'views'));
+app.set('view engine', 'ejs');
 
-app.controller('MainCtrl', [
-	'$scope',
-	'ratings',
-	function($scope, ratings){
-		$scope.ratings = ratings.ratings;
+// uncomment after placing your favicon in /public
+//app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
+app.use(logger('dev'));
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(cookieParser());
+app.use(express.static(path.join(__dirname, 'public')));
 
-		$scope.addRating = function(){
-			if(!$scope.state||$scope.state===''||!$scope.number||$scope.number===''||!$scope.rating||$scope.rating===''){return;}
-			$scope.ratings.push({state: $scope.state, number: $scope.number, rating: $scope.rating, comments: []});
-			$scope.state='';
-			$scope.number='';
-			$scope.rating='';
-		};
-}]);
+app.use('/', routes);
+app.use('/users', users);
 
-app.controller('RatingsCtrl',[
-	'$scope',
-	'$stateParams',
-	'ratings',
-	function($scope, $stateParams, ratings){
-		$scope.rating = ratings.ratings[$stateParams.id];
+// catch 404 and forward to error handler
+app.use(function(req, res, next) {
+  var err = new Error('Not Found');
+  err.status = 404;
+  next(err);
+});
 
-		$scope.addComment = function(){
-			if($scope.body===''){return;}
-			$scope.rating.comments.push($scope.body);
-			$scope.body='';
-		};
-}]);
+// error handlers
+
+// development error handler
+// will print stacktrace
+if (app.get('env') === 'development') {
+  app.use(function(err, req, res, next) {
+    res.status(err.status || 500);
+    res.render('error', {
+      message: err.message,
+      error: err
+    });
+  });
+}
+
+// production error handler
+// no stacktraces leaked to user
+app.use(function(err, req, res, next) {
+  res.status(err.status || 500);
+  res.render('error', {
+    message: err.message,
+    error: {}
+  });
+});
+
+
+module.exports = app;
