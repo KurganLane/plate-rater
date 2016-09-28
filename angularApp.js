@@ -21,8 +21,14 @@ app.config([
 			.state('ratings',{
 				url: '/ratings/{id}',
 				templateUrl: '/ratings.html',
-				controller: 'RatingsCtrl'
+				controller: 'RatingsCtrl',
+				resolve: {
+					rating: ['$stateParams', 'ratings', function($stateParams, ratings){
+						return ratings.get($stateParams.id);
+					}]
+				}
 			});
+
 		$urlRouterProvider.otherwise('home');
 }]);
 
@@ -34,6 +40,12 @@ app.factory('ratings', ['$http', function($http){
 	o.getAll = function(){
 		return $http.get('/ratings').success(function(data){
 			angular.copy(data, o.ratings);
+		});
+	};
+
+	o.get = function(id){
+		return $http.get('/ratings/' + id).then(function(res){
+			return res.data;
 		});
 	};
 
@@ -63,10 +75,10 @@ app.controller('MainCtrl', [
 
 app.controller('RatingsCtrl',[
 	'$scope',
-	'$stateParams',
 	'ratings',
-	function($scope, $stateParams, ratings){
-		$scope.rating = ratings.ratings[$stateParams.id];
+	'rating',
+	function($scope, ratings, rating){
+		$scope.rating = rating;
 
 		$scope.addComment = function(){
 			if($scope.body===''){return;}
