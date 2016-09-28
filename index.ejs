@@ -19,7 +19,7 @@
 			<h1>Plate Rater</h1>
 		</div>
 		<div ng-repeat="rating in ratings | filter:search">
-			<strong>State</strong> - {{rating.state}} <strong>Plate Number</strong> - {{rating.number}} - <a href="#/ratings/{{$index}}">View Ratings</a>	
+			<strong>State</strong> - {{rating.state}} <strong>Plate Number</strong> - {{rating.number}} - <a href="#/ratings/{{rating._id}}">View Ratings</a>	
 		</div>
 		<div style="margin-top:30px;">
 			Search by plate number: <input ng-model="search.number"><br>
